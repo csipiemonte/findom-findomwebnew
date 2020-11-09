@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ##################################################### -->
+<!-- # Copyright Regione Piemonte - 2020                 # -->
+<!-- # SPDX-License-Identifier: EUPL-1.2-or-later        # -->
+<!-- ##################################################### -->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd"
+    >
+
+	<bean id="applicationContextManager"
+		class="it.csi.util.beanlocatorfactory.SpringApplicationContextManager" />
+
+	<!-- CONFIGURAZIONI DELL'AGGREGATORE DIPENDENTI DALL'AMBIENTE DELL'APPLICAZIONE OSPITANTE L'AGGREGATORE -->
+
+	<!-- lettura property di configurazione di default della libreria e custom 
+		N.B. tutte le configurazioni di default sono sovrascrivibili da quelle custom -->
+	<bean
+		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="locations">
+			<list>
+				<value>
+					classpath:META-INF/aggregatoreCustomConfig.properties
+				</value>
+			</list>
+		</property>
+		<property name="ignoreUnresolvablePlaceholders" value="true" />
+	</bean>
+
+	<!-- bean di configurazione della libreria AggregatoreUtil -->
+	<bean id="aggregatoreutilConfig" class="it.csi.melograno.aggregatoreutil.util.Config">
+
+		<!-- - - - - - - - - - - - - - - - - -->
+		<!-- properties generali obbligatori -->
+		<!-- - - - - - - - - - - - - - - - - -->
+
+		<property name="loggerName" value="${logger.applicationName}" />
+		<property name="separatorOfParameters" value="${separator.parameter}" />
+		<property name="sepatatorCommandParameters" value="${separator.commandParameters}" />
+		<property name="contextAttrname" value="findomwebContext" />
+		<property name="userRetrivier" ref="userRetrivier" />
+		<property name="userIdParamname" value="xuserId" />
+		<property name="userDescParamname" value="xuserDesc" />
+		<property name="commIdParamname" value="xcommId" />
+		<property name="formIdParamname" value="xformId" />
+		<property name="formTypeParamname" value="xformType" />
+		<property name="formDescParamname" value="xformDesc" />
+		<property name="formProgParamname" value="xformProg" />
+		<property name="formNameParamname" value="xformName" />
+		<property name="formStateParamname" value="xformState" />
+		<property name="sectIdParamname" value="xsectId" />
+		<property name="sectXpParamname" value="xsectXp" />
+		<property name="pageIdParamname" value="xpageId" />
+		<property name="pageXpParamname" value="xpageXp" />
+		<property name="entityKeyParamname" value="xentityKey" />
+		<property name="entityValParamname" value="xentityVal" />
+		<property name="draftStrParamname" value="xdraftStr" />
+		<property name="staticResourcesUrl" value="@@staticResourceUrl@@" />
+		<property name="urlpath" value="/@@war.context.name@@/aggregatoreUtil/exec.do" />
+		<property name="homeUrl" value="/@@war.context.name@@/cercaDomande.do" />
+		<property name="homeUrlXp" value="/@@war.context.name@@/cercaDomande.do" />
+		<!--property name="printAction" value="/@@war.context.name@@/aggregatoreUtil/printPage.do" /-->
+		<property name="printAction" value="/@@war.context.name@@/stampaDomandaDaIndice.do" />
+
+		<!-- - - - - - - - - - - - - - - - -->
+		<!-- properties generali opzionali -->
+		<!-- - - - - - - - - - - - - - - - -->
+
+		<!-- valori per gli stati di validazione globale, i valori di default sono i nomi letterali dell'enumeration FormState --> 
+		<property name="formStateValue_unverified" value="BZ" />
+		<property name="formStateValue_verifiedOK" value="OK" />
+		<property name="formStateValue_verifiedOW" value="OW" />
+		<property name="formStateValue_verifiedKO" value="KO" />
+		<property name="formStateValue_frozen" value="IN" />
+		<property name="formStateValue_closed" value="CH" />
+
+		<!-- valori custom per gli stati di compilazione delle sezioni di un form -->
+		<property name="sectStateValue_uncompiled" value="non_compilato" />
+		<property name="sectStateValue_inProgress" value="stato_in_corso" />
+		<property name="sectStateValue_terminated" value="compilato" />
+
+		<!-- label custom per gli stati di compilazione delle sezioni di un form -->
+		<property name="xhtml_sectStateLabel_uncompiled" value="&lt;p class='stato_non_compilato'&gt;&lt;span class='txtTooltip'&gt;&lt;span&gt;stato: non compilato&lt;/span&gt;&lt;/span&gt;&lt;/p&gt;" />
+		<property name="xhtml_sectStateLabel_inProgress" value="&lt;p class='stato_in_corso'&gt;&lt;span class='txtTooltip'&gt;&lt;span&gt;stato: in corso&lt;/span&gt;&lt;/span&gt;&lt;/p&gt;" />
+		<property name="xhtml_sectStateLabel_terminated" value="&lt;p class='stato_compilato'&gt;&lt;span class='txtTooltip'&gt;&lt;span&gt;stato: compilato&lt;/span&gt;&lt;/span&gt;&lt;/p&gt;" />
+
+		<!-- classi di stile per i messaggi di richiesta conferma, informativi, di warning e di errore -->
+		<property name="class_div_mandatoryNote" value="mandatoryNote" />
+		<property name="class_div_messageValidationUniqueBox" value="stdMessagePanel feedback" />
+		<property name="class_div_messageUniqueBox" value="stdMessagePanel feedback" />
+		<property name="class_div_messageField" value="stdMessagePanel feedback" />
+		<property name="class_div_confirm" value="stdMessagePanel feedback" />
+
+		<!-- xhtml per header e footer dei messaggi informativi, di warning e di errore -->
+		<property name="xhtml_messageHeader_validationInfo" value="&lt;div class='feedInfo'&gt;&lt;strong&gt;Attenzione!&lt;/strong&gt;&lt;br/&gt;La verifica globale ha riscontrato:&lt;br/&gt;" />
+		<property name="xhtml_messageFooter_validationInfo" value="&lt;/div&gt;" />
+		<property name="xhtml_messageHeader_validationWarn" value="&lt;div class='feedInfo'&gt;" />
+		<property name="xhtml_messageFooter_validationWarn" value="&lt;/div&gt;" />
+		<property name="xhtml_messageHeader_validationError" value="&lt;div class='feedKo'&gt;" />
+		<property name="xhtml_messageFooter_validationError" value="&lt;/div&gt;" />
+		<property name="xhtml_messageHeader_info" value="&lt;div class='feedCorrect'&gt;" />
+		<property name="xhtml_messageFooter_info" value="&lt;/div&gt;" />
+		<property name="xhtml_messageHeader_warn" value="&lt;div class='feedInfo'&gt;" />
+		<property name="xhtml_messageFooter_warn" value="&lt;/div&gt;" />
+		<property name="xhtml_messageHeader_error" value="&lt;div class='feedKo'&gt;" />
+		<property name="xhtml_messageFooter_error" value="&lt;/div&gt;" />
+		<!-- property name="xhtml_messageHeader_field" value="&lt;div class='feedKo'&gt;&lt;p&gt;&lt;strong&gt;Attenzione!&lt;/strong&gt;&lt;br/&gt;L'operazione non &#232; andata a buon fine.&lt;br/&gt;I campi bordati di rosso e contrassegnati con l'icona &lt;b&gt;&lt;font color='red'&gt;&lt;img title='errore' alt='&lt;!&gt;' src='/ris/resources/global/images/error.gif'&gt;&lt;/font&gt;&lt;/b&gt; contengono degli errori. Leggi l'indicazione accanto ad ogni campo e correggi i dati.&lt;/p&gt;" /-->
+		<property name="xhtml_messageHeader_field" value="&lt;div class='feedKo'&gt;&lt;p&gt;&lt;strong&gt;Attenzione!&lt;/strong&gt;&lt;br/&gt;L'operazione non &#232; andata a buon fine.&lt;br/&gt; Verificare e correggere i campi evidenziati.&lt;/p&gt;" />
+		<property name="xhtml_messageFooter_field" value="&lt;/div&gt;" />
+		<property name="xhtml_messageHeader_conf" value="&lt;div class='feedInfo'&gt;" />
+		<property name="xhtml_messageFooter_conf" value="&lt;/div&gt;" />
+
+		<!-- per nascondere i titoli standard del menu-indice e la modalita operativa -->
+		<property name="xhtml_titleLabel_mainMenu" value="" />
+		<property name="xhtml_titleLabel_accessRWForm" value="" />
+		<property name="xhtml_titleLabel_accessROForm" value="" />
+
+		<!-- modifica messaggi   -->
+		<property name="message_validationSuccess" value="Verifica globale effettuata con successo." />
+		
+		<!-- per nascondere i bottoni standard per tornare al riepilogo e per tornare al menu-indice -->
+		<property name="buttonLabel_listPage" value="" />
+		<property name="buttonLabel_menuPage" value="" />
+
+		<!-- label custom di alcuni bottoni standard -->
+		<property name="buttonLabel_accessRWForm" value="Modifica" />
+		<property name="buttonLabel_accessROForm" value="Dettaglio" />
+		<property name="buttonLabel_deleteForm" value="Elimina" />
+		<property name="buttonLabel_printForm" value="Stampa" />
+		<property name="buttonLabel_verifyFormTODO" value="Verifica" />
+		<property name="buttonLabel_verifyFormOK" value="Verifica" />
+		<property name="buttonLabel_verifyFormOW" value="Verifica" />
+		<property name="buttonLabel_verifyFormKO" value="Verifica" />
+		<property name="buttonLabel_resetPage" value="Pulisci i campi" />
+		<property name="buttonLabel_restorePage" value="Ripristina valori iniziali" />
+		<property name="buttonLabel_savePage" value="Salva" />
+
+		<!-- title custom per i link/bottoni standard -->
+		<property name="buttonTitle_accessRWForm" value="modifica" />
+		<property name="buttonTitle_accessROForm" value="dettaglio" />
+		<property name="buttonTitle_deleteForm" value="elimina" />
+		<property name="buttonTitle_printForm" value="stampa" />
+		<property name="buttonTitle_verifyFormTODO" value="stato: ancora da validare" />
+		<property name="buttonTitle_verifyFormOK" value="stato: validato" />
+		<property name="buttonTitle_verifyFormOW" value="stato: validato con segnalazioni" />
+		<property name="buttonTitle_verifyFormKO" value="stato: verificato con errori" />
+
+		<!-- classi di stile custom per i div contenitori degli span contenitori dei link/bottoni standard -->
+		<property name="class_div_button" value="button left" />
+
+		<!-- classi di stile custom per gli span contenitori dei link/bottoni standard -->
+		<property name="class_span_accessRWForm" value="edit" />
+		<property name="class_span_accessROForm" value="detail" />
+		<property name="class_span_deleteForm" value="cancel" />
+		<property name="class_span_printForm" value="print" />
+		<property name="class_span_savePage" value="save highlighted" />
+
+		<!-- classi di stile custom per i bottoni/link standard (fa comparire il pallino grigio, verde o rosso) -->
+		<property name="class_button_verifyFormTODO" value="stato_da_eseguire" />
+		<property name="class_button_verifyFormOK" value="stato_eseguito_no_errori" />
+		<property name="class_button_verifyFormOW" value="stato_eseguito_warning" />
+		<property name="class_button_verifyFormKO" value="stato_eseguito_errori" />
+
+		<!-- generali -->
+		<property name="hideDisabledPages" value="false" />
+		<property name="enableReadOnlyAccess" value="true" />
+		<property name="filenamePrefix" value="DomandaNumero[" />
+		<property name="filenameSeparator" value="]-[" />
+		<property name="filenameSuffix" value="]" />
+		<property name="hideFilenameFormId" value="true" />
+		<property name="hideFilenameFormNum" value="false" />
+		<property name="hideFilenameFormProg" value="true" />
+		<property name="hideFilenameUserId" value="false" />
+		<property name="hideFilenameUserDesc" value="true" />
+		<property name="hideOperationLabels" value="true" />
+		<property name="hideValidationInfoBox" value="false" />
+		<property name="hideValidationWarnBox" value="true" />
+		<property name="hideValidationErrorBox" value="true" />
+		<property name="showValidationInfoList" value="true" />
+		<property name="showValidationWarnList" value="true" />
+		<property name="showValidationErrorList" value="true" />
+		<property name="showInfoList" value="true" />
+		<property name="showWarnList" value="true" />
+		<property name="showErrorList" value="true" />
+		<property name="showFieldErrorMap" value="false" />
+
+		<!-- altre classi di stile per la vestizione -->
+		<property name="class_table_header" value="formTable" />
+		<property name="class_table_data" value="dataTable" />
+		<property name="class_th_nosort" value="nosort" />
+		<property name="class_tr_even" value="even" />
+		<property name="class_div_barContainer" value="menuDropdown" />
+		<property name="class_ul_barContainer" value="sf-menu sf-navdrop sf-navdrop-simple" />
+		<property name="class_li_barDisabled" value="disattivo" />
+		<property name="class_div_tabContainer" value="tabSetPanel" />
+		<property name="class_ul_tabContainer" value="tabSetNav" />
+		<property name="class_li_tabActive" value="active" />
+		<property name="class_li_tabNoActive" value="noActive" />
+		<property name="class_span_tabActive" value="activeItem" />
+		<property name="class_span_alert" value="error" />
+	</bean>
+
+	<!-- lettore dell'identita digitale -->
+	<bean id="userRetrivier"
+		class="it.csi.findom.findomwebnew.business.UserRetrivierForApplication" />
+
+	<!-- helper per le funzioni di securizzazione
+	<be an id="standardGtManager" class="it.csi.fla idom.domweb.business.Standar dGtManager"></bean>
+    -->
+	
+	<bean id="serviziFindomWeb" class="it.csi.findom.findomwebnew.business.servizifindomweb.ServiziFindomWeb">
+		<property name="findomWebDao" ref="findomWebDao"/>
+	</bean>
+	
+	<!-- DB CONFIGURATION AND DAO -->
+	<import resource="serviziFindomWebDao-beans.xml" />
+	
+	<!-- BUSINESS CONFIGURATION -->
+    
+    <bean id="indexHelper" class="it.csi.findom.findomwebnew.business.helper.IndexHelper">
+		<property name="indexDAO" ref="indexDAO"/>
+	</bean>
+    <!-- INTEGRATION CONFIGURATION --> 
+    <bean id="indexDAO" class="it.csi.findom.findomwebnew.integration.extservices.index.IndexDAOImpl" init-method="init" />
+ 	<bean id="aaepDAO" class="it.csi.findom.findomwebnew.integration.extservices.aaep.AaepDAOImpl" init-method="init" />
+    <bean id="dosignDAO" class="it.csi.findom.findomwebnew.integration.extservices.dosign.DosignDAOImpl" init-method="init" />
+    <bean id="ipaDAO" class="it.csi.findom.findomwebnew.integration.extservices.ipa.IpaDAOImpl" init-method="init" />
+    <bean id="mailDAO" class="it.csi.findom.findomwebnew.integration.extservices.mail.MailDAOImpl" />
+
+</beans>

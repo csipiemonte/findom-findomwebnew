@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- ##################################################### -->
+<!-- # Copyright Regione Piemonte - 2020                 # -->
+<!-- # SPDX-License-Identifier: EUPL-1.2-or-later        # -->
+<!-- ##################################################### -->
+
+<!DOCTYPE struts PUBLIC
+        "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+        "http://struts.apache.org/dtds/struts-2.0.dtd">
+<struts>
+	<constant name="struts.ui.theme" value="csi" />
+
+	<package name="packageFiles" namespace="/" extends="jsp-package">
+		
+		<!-- upload del file  -->
+		<action name="caricaAllegati" class="it.csi.findom.findomwebnew.presentation.action.CaricaFilesAction" >
+			
+			<result name="viewFile" type="chain">viewIndexFile</result>
+			<result name="viewDBFile" type="chain">viewDBFile</result>
+			<result name="success">/jsp/domanda.jsp</result>
+			<result name="input">/jsp/domanda.jsp</result>
+			<result name="error">/jsp/error/error404.jsp</result>
+			
+		</action>
+		
+		<!--  Azione per scaricare il pdf di una domanda INVIATA -->
+		<action name="viewIndexFile" class="it.csi.findom.findomwebnew.presentation.action.ViewIndexFilesAction">
+			<result name="success" type="stream">
+		        <param name="inputName">pdfStream</param>
+		        <!-- <param name="contentType">application/pdf</param> -->
+		        <param name="contentType">${contentType}</param>
+		        <param name="contentDisposition">${contentDisposition}</param>
+			</result>
+			<result name="error">/jsp/domanda.jsp</result>
+		</action>
+		
+		<!--  Azione per aprire un file presente sul DB -->
+		<action name="viewDBFile" class="it.csi.findom.findomwebnew.presentation.action.ViewDBFilesAction">
+			<result name="success" type="stream">
+		        <param name="inputName">pdfStream</param>
+		        <!-- <param name="contentType">application/pdf</param> -->
+		        <param name="contentType">${contentType}</param>
+		        <param name="contentDisposition">${contentDisposition}</param>
+			</result>
+			<result name="error">/jsp/domanda.jsp</result>
+		</action>
+		
+		<!-- upload del file firmato  -->
+		<action name="caricaDocFirmato" class="it.csi.findom.findomwebnew.presentation.action.UploadDocFirmatoAction" >
+			
+			<result name="viewFile" type="chain">viewIndexFile</result>
+			<result name="success">/jsp/uploadDocFirmati.jsp</result>
+			<result name="input">/jsp/uploadDocFirmati.jsp</result>			
+			<result name="error">/jsp/uploadDocFirmati.jsp</result>
+		</action>
+			
+		<action name="vaiUploadDocFirmato"  class="it.csi.findom.findomwebnew.presentation.action.VaiUploadDocFirmatoAction">			
+			<result name="success">jsp/uploadDocFirmati.jsp</result>
+			<result name="error" type="chain">cercaDomande</result>
+		</action>
+		<!-- fine upload -->
+	</package>
+</struts>

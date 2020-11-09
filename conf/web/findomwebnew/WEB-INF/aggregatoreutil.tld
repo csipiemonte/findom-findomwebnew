@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ##################################################### -->
+<!-- # Copyright Regione Piemonte - 2020                 # -->
+<!-- # SPDX-License-Identifier: EUPL-1.2-or-later        # -->
+<!-- ##################################################### -->
+
+<!DOCTYPE taglib PUBLIC "-//Sun Microsystems, Inc.//DTD JSP Tag Library 1.2//EN" "http://java.sun.com/dtd/web-jsptaglibrary_1_2.dtd">
+<taglib>
+	<tlib-version>1.1</tlib-version>
+	<jsp-version>1.2</jsp-version>
+	<short-name>aggregatore</short-name>
+	<uri>http://www.sistemapiemonte.it/formazioneprofessionale/tlds/aggregatoreutil</uri>
+	<display-name>Motore *: Tag Library</display-name>
+	<description><![CDATA[Motore tag library:sezione operatore]]></description>
+	<tag>
+		<name>init</name>
+		<tag-class>it.csi.melograno.aggregatoreutil.presentation.aggregatoreutil.tag.InitTag</tag-class>
+		<body-content>empty</body-content>
+		<description><![CDATA[Tag iniziale di inizializzazione, questo tag deve essere sempre il primo]]></description>
+	</tag>
+	<tag>
+		<name>include4Canc</name>
+		<tag-class>it.csi.melograno.aggregatoreutil.presentation.aggregatoreutil.tag.Include4CancTag</tag-class>
+		<body-content>JSP</body-content>
+		<description><![CDATA[Tag per l'inclusione di una porzione di template
+		popolata con i dati di contesto e del modello dati corrente, oppure del
+		contenuto del body del tag stesso (se presente), nella pagina web della
+		conferma per la cancellazione di un form istanziato selezionato]]></description>
+
+		<!-- marcatore dell'inizio e della fine della generazione del tag -->
+		<attribute>
+			<name>name</name>
+			<required>false</required>
+		</attribute>
+
+		<!-- id o query Xpath per la porzione di template da includere -->
+		<attribute>
+			<name>includeId</name>
+			<required>false</required>
+		</attribute>
+	</tag>
+	<tag>
+		<name>include4List</name>
+		<tag-class>it.csi.melograno.aggregatoreutil.presentation.aggregatoreutil.tag.Include4ListTag</tag-class>
+		<body-content>JSP</body-content>
+		<description><![CDATA[Tag per l'inclusione di una porzione di template
+		popolata con i dati di contesto e del modello dati corrente, oppure del
+		contenuto del body del tag stesso (se presente), nella pagina web del
+		riepilogo dei form istanziati e istanziabili]]></description>
+
+		<!-- marcatore dell'inizio e della fine della generazione del tag -->
+		<attribute>
+			<name>name</name>
+			<required>false</required>
+		</attribute>
+
+		<!-- identificatore del template da cui estrarre la porzione da renderizzare 
+			tramite l'attributo includeId. Questo attributo viene ignorato se il tag 
+			dispone di un body -->
+		<attribute>
+			<name>formId</name>
+			<required>false</required>
+		</attribute>
+
+		<!-- id o query Xpath per la porzione di template da includere -->
+		<attribute>
+			<name>includeId</name>
+			<required>false</required>
+		</attribute>
+	</tag>
+	<tag>
+		<name>include4Menu</name>
+		<tag-class>it.csi.melograno.aggregatoreutil.presentation.aggregatoreutil.tag.Include4MenuTag</tag-class>
+		<body-content>JSP</body-content>
+		<description><![CDATA[Tag per l'inclusione di una porzione di template
+		popolata con i dati di contesto e del modello dati corrente, oppure del
+		contenuto del body del tag stesso (se presente), nella pagina web del
+		menu delle sezioni e delle pagine di un tipo di form selezionato]]></description>
+
+		<!-- marcatore dell'inizio e della fine della generazione del tag -->
+		<attribute>
+			<name>name</name>
+			<required>false</required>
+		</attribute>
+
+		<!-- id o query Xpath per la porzione di template da includere -->
+		<attribute>
+			<name>includeId</name>
+			<required>false</required>
+		</attribute>
+	</tag>
+	<tag>
+		<name>include4Page</name>
+		<tag-class>it.csi.melograno.aggregatoreutil.presentation.aggregatoreutil.tag.Include4PageTag</tag-class>
+		<body-content>JSP</body-content>
+		<description><![CDATA[Tag per l'inclusione di una porzione di template
+		popolata con i dati di contesto e del modello dati corrente, oppure del
+		contenuto del body del tag stesso (se presente), nella pagina web della
+		pagina seleziona]]></description>
+
+		<!-- marcatore dell'inizio e della fine della generazione del tag -->
+		<attribute>
+			<name>name</name>
+			<required>false</required>
+		</attribute>
+
+		<!-- id o query Xpath per la porzione di template da includere -->
+		<attribute>
+			<name>includeId</name>
+			<required>false</required>
+		</attribute>
+	</tag>
+	<tag>
+		<name>header</name>
+		<tag-class>it.csi.melograno.aggregatoreutil.presentation.aggregatoreutil.tag.HeaderTag</tag-class>
+		<body-content>JSP</body-content>
+		<description><![CDATA[Visualizza una intestazione]]></description>
+
+		<!-- id o query Xpath per la porzione di template da includere -->
+		<attribute>
+			<name>includeId</name>
+			<required>false</required>
+		</attribute>
+	</tag>
+	<tag>
+		<name>bar</name>
+		<tag-class>it.csi.melograno.aggregatoreutil.presentation.aggregatoreutil.tag.BarTag</tag-class>
+		<body-content>empty</body-content>
+		<description>
+			<![CDATA[Visualizza barra costituita da una sequenza orizzontale a linguette (o "tab")
+			dove ogni tab indica: un tab "home" per tornare alla pagina di home dell'applicazione
+			chiamante; un tab "list" per tornare alla pagina del ripilogo dei form istanziati e
+			istanziabili; un tab "menu" relativo alla pagina del menu delle sezioni e delle pagine
+			di un form istanziato, un tab per ogni sezione del form istanziato]]>
+		</description>
+
+		<!-- label del tab "home" -->
+		<attribute>
+			<name>homeLabel</name>
+			<required>false</required>
+		</attribute>
+
+		<!-- flag tab "home" visibile o no -->
+		<attribute>
+			<name>homeVisible</name>
+			<required>false</required>
+			<type>java.lang.Boolean</type>
+		</attribute>
+
+		<!-- label del tab "list" -->
+		<attribute>
+			<name>listLabel</name>
+			<required>false</required>
+		</attribute>
+
+		<!-- url-path associata al tab "list" -->
+		<attribute>
+			<name>listUrl</name>
+			<required>false</required>
+		</attribute>
+
+		<!-- flag tab "list" visibile o no -->
+		<attribute>
+			<name>listVisible</name>
+			<required>false</required>
+			<type>java.lang.Boolean</type>
+		</attribute>
+
+		<!-- label del tab "menu" -->
+		<attribute>
+			<name>menuLabel</name>
+			<required>false</required>
+		</attribute>
+
+		<!-- url-path associata al tab "menu" -->
+		<attribute>
+			<name>menuUrl</name>
+			<required>false</required>
+		</attribute>
+
+		<!-- flag tab "menu" visibile o no -->
+		<attribute>
+			<name>menuVisible</name>
+			<required>false</required>
+			<type>java.lang.Boolean</type>
+		</attribute>
+	</tag>
+	<tag>
+		<name>menu</name>
+		<tag-class>it.csi.melograno.aggregatoreutil.presentation.aggregatoreutil.tag.MenuTag</tag-class>
+		<body-content>empty</body-content>
+		<description>
+			<![CDATA[Visualizza menu composto dall'elenco delle descrizioni delle sezioni
+					 e per ogni sezione l'elenco delle descrizioni delle sue pagine,
+					 oppure la descrizione della sola sezione selezionata (se l'attributo
+					 sectTabVisible="true" o null, e l'elenco delle descrizioni delle sue
+					 pagine]]>
+		</description>
+		<attribute>
+			<name>sectTabVisible</name>
+			<required>false</required>
+			<type>java.lang.Boolean</type>
+		</attribute>
+	</tag>
+	<tag>
+		<name>message</name>
+		<tag-class>it.csi.melograno.aggregatoreutil.presentation.aggregatoreutil.tag.MessageTag</tag-class>
+		<body-content>empty</body-content>
+		<description><![CDATA[Visualizza eventuali messaggi]]></description>
+	</tag>
+	<tag>
+		<name>body</name>
+		<tag-class>it.csi.melograno.aggregatoreutil.presentation.aggregatoreutil.tag.BodyTag</tag-class>
+		<body-content>empty</body-content>
+		<description><![CDATA[Visualizza il body)]]></description>
+	</tag>
+	<tag>
+		<name>buttons</name>
+		<tag-class>it.csi.melograno.aggregatoreutil.presentation.aggregatoreutil.tag.ButtonsTag</tag-class>
+		<body-content>empty</body-content>
+		<description><![CDATA[Visualizza la bottoniera di pagina o di sezione]]></description>
+	</tag>
+	<tag>
+		<name>end</name>
+		<tag-class>it.csi.melograno.aggregatoreutil.presentation.aggregatoreutil.tag.EndTag</tag-class>
+		<body-content>empty</body-content>
+		<description><![CDATA[Tag finale di deconfigurazione, questo tag deve essere sempre l'ultimo]]></description>
+	</tag>
+</taglib>

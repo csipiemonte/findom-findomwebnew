@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- ##################################################### -->
+<!-- # Copyright Regione Piemonte - 2020                 # -->
+<!-- # SPDX-License-Identifier: EUPL-1.2-or-later        # -->
+<!-- ##################################################### -->
+
+<!DOCTYPE struts PUBLIC
+        "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+        "http://struts.apache.org/dtds/struts-2.0.dtd">
+<struts>
+	<constant name="struts.ui.theme" value="csi" />
+
+	<package name="findomwebnewPackageJSP" namespace="/" extends="jsp-package">
+
+		<action name="home" class="it.csi.findom.findomwebnew.presentation.action.ReturnToRouterAction" method="home">
+			<result name="error">jsp/error/error.jsp</result>
+		</action>
+		<action name="cercaDomande" class="it.csi.findom.findomwebnew.presentation.action.ReturnToRouterAction" method="cercaDomande">
+			<result name="error">jsp/error/error.jsp</result>
+		</action>
+		
+	 	<action name="inviaPropostaRouting" class="it.csi.findom.findomwebnew.presentation.action.FromRouterAction">
+			<result name="success" type="chain">inviaPropostaAction</result>
+			<result name="error" type="chain">cercaDomande</result>
+		</action>
+		
+		<!-- azione che invia la proposta compilate dall'utente -->
+		<action name="inviaPropostaAction" class="it.csi.findom.findomwebnew.presentation.action.InviaDomandaAction">			
+			<result name="success" type="chain">cercaDomande</result>
+			<result name="error" type="chain">cercaDomande</result>
+		</action>
+
+		<!-- Azione del form per creare una nuova domanda,  porta all'indice di una nuova domanda -->
+		<action name="createDomandaRouting"	class="it.csi.findom.findomwebnew.presentation.action.FromRouterAction">
+			<result name="success" type="chain">inserisciDomanda</result>
+			<result name="error" type="chain">cercaDomande</result>
+		</action>
+		
+ 		<action name="inserisciDomanda"	class="it.csi.findom.findomwebnew.presentation.action.CreateNewDomandaAction">
+			<result>jsp/domanda.jsp</result>
+			<result name="input" type="redirectAction">
+			    <param name="actionName">cercaDomande</param>
+			</result>
+			<result  name="error" type="chain">cercaDomande</result>
+		</action>
+
+ 		<action name="loadDomandaRouting" class="it.csi.findom.findomwebnew.presentation.action.FromRouterAction">
+			<result name="success" type="chain">loadDomanda</result>
+			<result name="error" type="chain">cercaDomande</result>
+		</action>
+ 		<action name="loadDomanda" class="it.csi.findom.findomwebnew.presentation.action.LoadDomandaAction">
+			<result>jsp/domanda.jsp</result>
+			<result name="error" type="chain">cercaDomande</result>
+		</action>
+ 		
+		<action name="eliminaProposta" class="it.csi.findom.findomwebnew.presentation.action.ConfermaDomandaAction" method="eliminaProposta">
+			<result name="elimina_success">jsp/conferma_eliminaDomanda.jsp</result>
+		</action>
+		<!-- azione che elimina la domanda compilata dall'utente -->
+		
+		<action name="eliminaPropostaAction" class="it.csi.findom.findomwebnew.presentation.action.EliminaPropostaAction">			
+			<result name="success" type="redirectAction">
+			    <param name="actionName">cercaDomande</param>
+			</result>
+			<!--per restare nella stessa pagina ed avere un errore piu' specifico <result  name="error" >jsp/error/error.jsp</result>	-->
+			<result name="error" type="redirectAction">
+			    <param name="actionName">cercaDomande</param>
+			</result>		
+		</action>
+	
+	    <!-- azione che invalida la domanda compilata dall'utente -->		
+		<action name="invalidaPropostaAction" class="it.csi.findom.findomwebnew.presentation.action.InvalidaPropostaAction">			
+			<result name="success" type="redirectAction">
+			    <param name="actionName">cercaDomande</param>
+			</result>			
+			<result name="error" type="redirectAction">
+			    <param name="actionName">cercaDomande</param>
+			</result>		
+		</action>
+	
+	
+	
+	
+	
+	
+	
+		<action name="vaiUploadDocFirmatoRouting"  class="it.csi.findom.findomwebnew.presentation.action.FromRouterAction">			
+			<result name="success" type="chain">vaiUploadDocFirmatoAction</result>
+			<result name="error" type="chain">cercaDomande</result>
+		</action>
+				
+		<action name="vaiUploadDocFirmatoAction"  class="it.csi.findom.findomwebnew.presentation.action.VaiUploadDocFirmatoAction">			
+			<result name="success">jsp/uploadDocFirmati.jsp</result>
+			<result  name="error">jsp/error/error.jsp</result>			
+		</action>
+		
+		<action name="printPDFPropostaInviataRouting"  class="it.csi.findom.findomwebnew.presentation.action.FromRouterAction">			
+			<result name="success" type="chain">printPDFPropostaInviata</result>
+			<result name="error" type="chain">cercaDomande</result>
+		</action>
+
+		<action name="stampaDomandaDaIndice"  class="it.csi.findom.findomwebnew.presentation.action.StampaDomandaDaIndiceAction">			
+			<result name="domanda_inviata" type="redirectAction">
+				<param name="actionName">printPDFPropostaInviata</param>
+				<param name="idDomanda">${idDomanda}</param>
+			</result>
+			<result name="domanda_non_inviata" type="redirectAction">
+				<param name="actionName">printDomanda</param>
+				<param name="idDomanda">${idDomanda}</param>
+			</result>		
+		</action>		
+
+		<!--  Azione per scaricare il pdf di una domanda INVIATA -->
+		<action name="printPDFPropostaInviata" class="it.csi.findom.findomwebnew.presentation.action.LoadPDFPropostaInviataAction">
+			<result name="success" type="stream">
+		        <param name="inputName">pdfStream</param>
+		        <param name="contentType">application/pdf</param>
+		        <param name="contentDisposition">${contentDisposition}</param>
+			</result>
+			<result  name="error" type="chain">cercaDomande</result>
+		</action>
+
+		<!--  Azione invocata per visualizzare gli errori ottenuti durante la validazione globale -->
+ 		<action name="mostraSegnalazioniValidazione" class="it.csi.findom.findomwebnew.presentation.action.MostraSegnalazioniValidazioneAction">
+			<result name="success">jsp/segnalazioniValidazione.jsp</result>
+		</action>
+		
+		<action name="printDomandaRouting"  class="it.csi.findom.findomwebnew.presentation.action.FromRouterAction">			
+			<result name="success" type="chain">printDomanda</result>
+			<result name="error" type="chain">cercaDomande</result>
+		</action>
+		
+		<action  name="printDomanda" class="it.csi.findom.findomwebnew.presentation.action.PrintDomandaAction">
+			<result name="success" type="chain">printPdf</result>
+			<result  name="error" type="chain">cercaDomande</result>
+	   </action>
+
+		<action name="printPdf"
+			class="it.csi.melograno.aggregatoreutil.presentation.aggregatoreutil.action.PrintPdfAction">
+			<result name="success" type="stream">
+				<param name="inputName">pdfStream</param>
+				<param name="contentType">application/pdf</param>
+				<param name="contentDisposition">attachment; filename="@@PREFISSO_DOMANDE_IN_LAVORAZIONE@@${filename}"</param>
+			</result>
+		</action>
+
+<!--  ===================INIZIO BOTTONI ESCI-CAMBIA PROFILO=================== -->	
+		
+		<!-- azione scatenata dal mini form con i due bottoni ESCI e CAMBIA PROFILO -->
+		<!-- questa azione viene invocata se e solo se i JAVASCRIPT sono DISABILITATI -->
+		<!-- Se Javascript e' attivo ESCI chiama esci.do e CAMBIA PROFILO chiama cambiaProfilo.do -->
+		<action name="apriModaliProfilo" class="it.csi.findom.findomwebnew.presentation.action.modali.ApriModaliProfiloAction">
+			<result name="esci">jsp/modali/conferma_logout.jsp</result>
+		</action>
+		
+		<!-- azione che scatta quando l'utente pigia il bottone "esci" -->
+		<action name="esci" class="it.csi.findom.findomwebnew.presentation.action.ReturnToRouterAction" method="esci">
+			<result name="error">jsp/error/error.jsp</result>
+		</action>
+
+		<action name="confermaCambiaProfilo" class="it.csi.findom.findomwebnew.presentation.action.ReturnToRouterAction" method="cambiaProfilo">
+			<result name="error">jsp/error/error.jsp</result>
+		</action>
+
+		<!-- finestra modale di conferma cambio profilo -->
+		<action name="cambiaProfilo" class="it.csi.findom.findomwebnew.presentation.action.CambiaProfiloAction">
+			<result name="monitoraggio">jsp/modali/conferma_cambiaProfilo.jsp</result>
+			<result>jsp/modali/conferma_cambiaProfilo.jsp</result>
+		</action>
+		
+		<!-- LOGOUT (LOCAL/SSO)-->
+		<action name="confirmLogout" class="it.csi.findom.findomwebnew.presentation.action.ConfirmLogoutAction">
+			<result name="confirmed" type="redirect">
+				<param name="location">@@LOGOUT_URL@@</param>
+			</result> 
+		</action>
+		
+		<!-- azione del cambia profilo post scelta nella modale -->
+		<action name="confermaCambiaProfilo" class="it.csi.findom.findomwebnew.presentation.action.ConfermaCambiaProfilo">
+			<result name="monitoraggio" type="chain">home</result>
+			<result name="confirmed" type="chain">home</result>
+				
+			<!-- questo result non dovrebbe mai venir esegito, lo inserisco per garantire che in caso di problemi non ottenga un 404 --> 
+			<result name="notConfirmed" type="chain">home</result>
+		</action>
+
+		<action name="ricaricaHome" class="it.csi.findom.findomwebnew.presentation.action.RicaricaHomeAction">
+			<result name="confirmed" type="chain">home</result>
+		</action>
+		
+		<action name="inserisciDocumentiIntegrazione"
+			class="it.csi.findom.findomwebnew.presentation.action.InserisciDocumentiIntegrazioneAction">
+			<result name="success">jsp/inserisciDocumentiIntegrazione.jsp</result>
+			<result name="error" type="chain">cercaDomande</result>
+		</action>
+
+		<action name="chiudiIntegrazione"
+			class="it.csi.findom.findomwebnew.presentation.action.InserisciDocumentiIntegrazioneAction"
+			method="chiudiIntegrazione">
+			<result name="success">jsp/inserisciDocumentiIntegrazione.jsp</result>
+			<result name="error" type="chain">cercaDomande</result>
+		</action>
+
+		<action name="inserisciDocumentiIntegrazioneRouting" class="it.csi.findom.findomwebnew.presentation.action.FromRouterAction">
+			<result name="success" type="chain">inserisciDocumentiIntegrazione</result>
+			<result name="error" type="chain">cercaDomande</result>
+		</action>
+		
+		<action name="uploadDocumentiIntegrazione"
+			class="it.csi.findom.findomwebnew.presentation.action.UploadDocumentoIntegrazioneAction">
+			<result name="input" type="redirectAction">
+				<param name="actionName">inserisciDocumentiIntegrazione</param>
+				<param name="idDomanda">${idDomanda}</param>
+				<param name="idBando">${idBando}</param>
+				<param name="statoRichiesta">${statoRichiesta}</param>
+				<param name="errorsList">${errorsList}</param>
+			</result>
+			<result name="success" type="chain">inserisciDocumentiIntegrazione
+			</result>
+			<result name="error" type="chain">inserisciDocumentiIntegrazione
+			</result>
+		</action>
+		
+<!--  ===================FINE BOTTONI ESCI-CAMBIA PROFILO=================== -->		
+
+	</package>
+
+</struts>

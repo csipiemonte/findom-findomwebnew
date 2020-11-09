@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ##################################################### -->
+<!-- # Copyright Regione Piemonte - 2020                 # -->
+<!-- # SPDX-License-Identifier: EUPL-1.2-or-later        # -->
+<!-- ##################################################### -->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+                           http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd
+                           http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd">
+
+	<!-- Insert here your Spring Beans -->
+    
+	<bean id="findomWebDao" class="it.csi.findom.findomwebnew.business.servizifindomweb.dao.ServiziFindomWebDaoImpl">
+		<property name="template" ref="namedJdbcTemplateAPP" />
+		<property name="ds" ref="dataSource" />
+	</bean>
+	
+	<bean id="namedJdbcTemplateAPP" class="org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate">
+		<constructor-arg ref="dataSource" />
+	</bean>
+	
+	<bean id="dataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
+		<property name="jndiName" value="java:jboss/findomweb/jdbc/findomwebDS" />
+		<property name="proxyInterface" value="javax.sql.DataSource" />
+	</bean>
+	
+	<bean id="txManager"
+		class="org.springframework.transaction.jta.JtaTransactionManager">
+	</bean>	
+    
+   <tx:annotation-driven transaction-manager="txManager"
+		proxy-target-class="false" />
+		
+</beans>

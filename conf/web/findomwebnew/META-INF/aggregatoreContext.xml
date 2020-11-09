@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ##################################################### -->
+<!-- # Copyright Regione Piemonte - 2020                 # -->
+<!-- # SPDX-License-Identifier: EUPL-1.2-or-later        # -->
+<!-- ##################################################### -->
+
+<!-- L'applicazione fruitrice deve aggiungere al classpath: /META-INF/aggregatoreContext.xml 
+	Per esempio, nel web.xml occorre indicare:
+	...
+	<context-param>
+		<param-name>contextConfigLocation</param-name> 
+		<param-value>classpath:/META-INF/aggregatoreContext.xml, ... </param-value> 
+	</context-param>
+	...
+	Se non fosse possibile, risulta necessario effetuare 
+	un import:
+	...
+	<import resource="classpath:META-INF/aggregatoreContext.xml"/>
+	...
+	in un file di configurazione di Spring della applicazione fruitrice. -->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<bean
+		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="locations">
+			<list>
+				<value>
+					classpath:META-INF/aggregatoreConfig.properties
+				</value>
+			</list>
+		</property>
+		<property name="ignoreUnresolvablePlaceholders" value="true" />
+	</bean>
+
+	<!-- configurazione logger e separatori dei comandi custom e dei parametri -->
+	<bean id="aggregatoreConfig" class="it.csi.melograno.aggregatore.util.AggregatoreConfig"
+		>
+		<property name="loggerName" value="${logger.applicationName}" />
+		<property name="separatorOfCommands" value="${separator.command}" />
+		<property name="separatorOfParameters" value="${separator.parameter}" />
+		<property name="sepatatorCommandParameters" value="${separator.commandParameters}" />
+		<property name="beanshellOutsideFreemarker" value="${beanshellOutsideFreemarker}" />
+		<property name="freemarkerCacheEnabled" value="${freemarkerCacheEnabled}" />
+		<property name="ableToRunJavaClasses" value="${ableToRunJavaClasses}" />
+	</bean>
+
+	<!-- configurazione DataSource -->
+	<bean id="jndiDataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
+		<property name="jndiName" value="${jdbc.jndiName}" />
+		<property name="proxyInterface" value="javax.sql.DataSource" />
+		<property name="lookupOnStartup" value="false" />
+	</bean>
+	<bean id="aggregatoreDataSource"
+		class="it.csi.melograno.aggregatore.integration.dao.util.AggregatoreDS">
+		<property name="jndiDataSource" ref="jndiDataSource" />
+		<property name="driverClassName" value="org.postgresql.Driver" />
+		<property name="url" value="jdbc.url" />
+		<property name="username" value="jdbc.username" />
+		<property name="password" value="jdbc.password" />
+		<property name="standalone" value="false" />
+	</bean>
+
+	<!-- configurazione NamedParameterJdbcTemplate -->
+	<bean id="namedJdbcTemplate"
+		class="it.csi.melograno.aggregatore.integration.dao.util.AggregatoreNamedParameterJdbcTemplate">
+		<property name="namedJdbcTemplate" ref="originalNamedJdbcTemplate" />
+	</bean>
+	<bean id="originalNamedJdbcTemplate"
+		class="org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate">
+		<constructor-arg ref="aggregatoreDataSource" />
+	</bean>
+
+	<!-- configurazione sequence -->
+	<bean id="templateSequence"
+		class="org.springframework.jdbc.support.incrementer.PostgreSQLSequenceMaxValueIncrementer">
+		<constructor-arg ref="aggregatoreDataSource" />
+		<constructor-arg value="${sequence.template}" />
+	</bean>
+	<bean id="templateIndexSequence"
+		class="org.springframework.jdbc.support.incrementer.PostgreSQLSequenceMaxValueIncrementer">
+		<constructor-arg ref="aggregatoreDataSource" />
+		<constructor-arg value="${sequence.templateIndex}" />
+	</bean>
+	<bean id="modelSequence"
+		class="org.springframework.jdbc.support.incrementer.PostgreSQLSequenceMaxValueIncrementer">
+		<constructor-arg ref="aggregatoreDataSource" />
+		<constructor-arg value="${sequence.model}" />
+	</bean>
+	<bean id="ruleSequence"
+		class="org.springframework.jdbc.support.incrementer.PostgreSQLSequenceMaxValueIncrementer">
+		<constructor-arg ref="aggregatoreDataSource" />
+		<constructor-arg value="${sequence.rule}" />
+	</bean>
+	<bean id="subModelSequence"
+		class="org.springframework.jdbc.support.incrementer.PostgreSQLSequenceMaxValueIncrementer">
+		<constructor-arg ref="aggregatoreDataSource" />
+		<constructor-arg value="${sequence.submodel}" />
+	</bean>
+	
+	<!-- configurazione DAO -->
+	<bean id="templateDAO"
+		class="it.csi.melograno.aggregatore.integration.dao.impl.TemplateDAOImpl">
+		<property name="namedJdbcTemplate" ref="namedJdbcTemplate" />
+		<property name="tableName" value="${table.template}" />
+		<property name="sequence" ref="templateSequence" />
+	</bean>
+	<bean id="templateForPageDAO"
+		class="it.csi.melograno.aggregatore.integration.dao.impl.TemplateForPageDAOImpl">
+		<property name="namedJdbcTemplate" ref="namedJdbcTemplate" />
+		<property name="tableName" value="${table.template}, ${table.templateIndex}" />
+	</bean>
+	<bean id="templateIndexDAO"
+		class="it.csi.melograno.aggregatore.integration.dao.impl.TemplateIndexDAOImpl">
+		<property name="namedJdbcTemplate" ref="namedJdbcTemplate" />
+		<property name="tableName" value="${table.templateIndex}" />
+		<property name="sequence" ref="templateIndexSequence" />
+	</bean>
+	<bean id="modelDAO"
+		class="it.csi.melograno.aggregatore.integration.dao.impl.ModelDAOImpl">
+		<property name="namedJdbcTemplate" ref="namedJdbcTemplate" />
+		<property name="tableName" value="${table.model}" />
+		<property name="sequence" ref="modelSequence" />
+	</bean>
+	<bean id="subModelDAO"
+		class="it.csi.melograno.aggregatore.integration.dao.impl.SubModelDAOImpl">
+		<property name="namedJdbcTemplate" ref="namedJdbcTemplate" />
+		<property name="tableName" value="${table.subModel}" />
+		<property name="sequence" ref="subModelSequence" />
+	</bean>
+	<bean id="modelIndexDAO"
+		class="it.csi.melograno.aggregatore.integration.dao.impl.ModelIndexDAOImpl">
+		<property name="namedJdbcTemplate" ref="namedJdbcTemplate" />
+		<property name="tableName" value="${table.modelIndex}" />
+	</bean>
+	<bean id="modelStateDAO"
+		class="it.csi.melograno.aggregatore.integration.dao.impl.ModelStateDAOImpl">
+		<property name="namedJdbcTemplate" ref="namedJdbcTemplate" />
+		<property name="tableName" value="${table.modelState}" />
+	</bean>
+	<bean id="ruleDAO"
+		class="it.csi.melograno.aggregatore.integration.dao.impl.RuleDAOImpl">
+		<property name="namedJdbcTemplate" ref="namedJdbcTemplate" />
+		<property name="tableName" value="${table.rule}" />
+		<property name="sequence" ref="ruleSequence" />
+	</bean>
+	<bean id="formDAO"
+		class="it.csi.melograno.aggregatore.integration.dao.impl.FormDAOImpl">
+		<property name="namedJdbcTemplate" ref="namedJdbcTemplate" />
+		<property name="tableName" value="${table.template}, ${table.model}, ${table.modelState}" />
+	</bean>
+
+	<!-- configurazione freemarker -->
+	<bean id="freemarkerTemplateLoader"
+		class="it.csi.melograno.aggregatore.freemarker.FreemarkerRowTemplateLoader"
+		scope="singleton">
+		<property name="templateDAO" ref="templateDAO" />
+		<property name="templateForPageDAO" ref="templateForPageDAO" />
+	</bean>
+	<bean id="freemarkerPDFTemplateLoader"
+		class="it.csi.melograno.aggregatore.freemarker.FreemarkerRowPDFTemplateLoader"
+		scope="singleton">
+		<property name="templateDAO" ref="templateDAO" />
+	</bean>
+	<bean id="freemarkerConfig"
+		class="it.csi.melograno.aggregatore.business.FreemarkerCustomConfig"
+		scope="singleton">
+		<property name="templateLoader" ref="freemarkerTemplateLoader" />
+		<property name="localizedLookup" value="false" />
+		<property name="templateUpdateDelayMilliseconds" value="${freemarkerTemplateCache}" />
+		<property name="sharedVariables">
+			<map>
+				<entry key="InjectModel">
+					<bean
+						class="it.csi.melograno.aggregatore.freemarker.InjectModelDirective" />
+				</entry>
+			</map>
+		</property>
+	</bean>
+	<bean id="freemarkerPDFConfig"
+		class="it.csi.melograno.aggregatore.business.FreemarkerCustomConfig"
+		scope="singleton">
+		<property name="templateLoader" ref="freemarkerPDFTemplateLoader" />
+		<property name="localizedLookup" value="false" />
+		<property name="templateUpdateDelayMilliseconds" value="${freemarkerTemplateCache}" />
+		<property name="sharedVariables">
+			<map>
+				<entry key="InjectModel">
+					<bean
+						class="it.csi.melograno.aggregatore.freemarker.InjectModelDirective" />
+				</entry>
+			</map>
+		</property>
+	</bean>
+
+	<!-- configurazione generale della libreria -->
+	<bean id="aggregatore" class="it.csi.melograno.aggregatore.business.AggregatoreImpl">
+		<property name="aggregatoreConfig" ref="aggregatoreConfig" />
+		<property name="templateDAO" ref="templateDAO" />
+		<property name="templateForPageDAO" ref="templateForPageDAO" />
+		<property name="templateIndexDAO" ref="templateIndexDAO" />
+		<property name="modelDAO" ref="modelDAO" />
+		<property name="subModelDAO" ref="subModelDAO" />
+		<property name="modelIndexDAO" ref="modelIndexDAO" />
+		<property name="modelStateDAO" ref="modelStateDAO" />
+		<property name="ruleDAO" ref="ruleDAO" />
+		<property name="formDAO" ref="formDAO" />
+		<property name="freemarkerConfig" ref="freemarkerConfig" />
+		<property name="freemarkerPDFConfig" ref="freemarkerPDFConfig" />
+		<property name="reportEngine" value="${reportEngine}"/>
+	</bean>
+
+	<bean id="contextProvider" depends-on="aggregatoreConfig"
+		class="it.csi.melograno.aggregatore.business.ContextProvider" />
+</beans>
